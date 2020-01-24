@@ -27,17 +27,25 @@
             android:textSize="18sp"/>
 
         <Button
-            android:id="@+id/btnNext"
+            android:id="@+id/btnBiodata"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="next"
+            android:text="biodata"
+            android:layout_alignParentBottom="true"/>
+
+        <Button
+            android:id="@+id/btnUbahPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="ubah password"
             android:layout_alignParentBottom="true"/>
 
         <Button
             android:id="@+id/btnLogout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="logout"
+            android:layout_marginTop="32dp"
+            android:text="log out"
             android:layout_alignParentBottom="true"/>
     </LinearLayout>
 

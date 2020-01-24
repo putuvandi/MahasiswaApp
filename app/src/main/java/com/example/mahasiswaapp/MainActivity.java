@@ -14,7 +14,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     TextView tvResultNim;
 
-    Button btnLogout, btnNext;
+    Button btnLogout, btnBiodata, btnUbahPassword;
 
     SharedPrefManager sharedPrefManager;
 
@@ -25,13 +25,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         tvResultNim = (TextView) findViewById(R.id.tvResultNim);
         btnLogout = (Button) findViewById(R.id.btnLogout);
-        btnNext = (Button) findViewById(R.id.btnNext);
+        btnBiodata = (Button) findViewById(R.id.btnBiodata);
+        btnUbahPassword = (Button) findViewById(R.id.btnUbahPassword);
 
         sharedPrefManager = new SharedPrefManager(this);
         tvResultNim.setText(sharedPrefManager.getSPNim());
 
         btnLogout.setOnClickListener(this);
-        btnNext.setOnClickListener(this);
+        btnBiodata.setOnClickListener(this);
+        btnUbahPassword.setOnClickListener(this);
 
         /*btnLogout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -43,12 +45,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
-        if (v == btnNext) {
-            Intent intent = new Intent(this, Welcome.class);
+        if (v == btnBiodata) {
+            Intent intent = new Intent(this, Biodata.class);
             startActivity(intent);
         }
         if (v == btnLogout) {
             konfirmasiLogout();
+        }
+        if (v == btnUbahPassword) {
+            Intent intent = new Intent(this, UbahPassword.class);
+            startActivity(intent);
         }
     }
 

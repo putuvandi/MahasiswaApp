@@ -14,4 +14,12 @@ public interface BaseApiService {
     Call<ResponseBody> loginRequest(@Field("nim") String nim,
                                     @Field("password") String password);
 
+
+    // Fungsi untuk memanggil API http://localhost/sia/UbahPassword.php
+    @FormUrlEncoded
+    @POST("UbahPassword.php")
+    Call<ResponseBody> ubahPassRequest(@Field("nim") String nim,
+                                    @Field("passwordlama") String passwordlama,
+                                       @Field("passwordbaru") String passwordbaru,
+                                       @Field("konfpassword") String konfpassword);
 }

@@ -50,6 +50,7 @@ public class Login extends AppCompatActivity {
         btnLogin = (Button) findViewById(R.id.btnLogin);
 
         sharedPrefManager = new SharedPrefManager(this);
+        // skip login jika user sudah login
         if (sharedPrefManager.getSPSudahLogin()){
             startActivity(new Intent(Login.this, MainActivity.class)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK));
