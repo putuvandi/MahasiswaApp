@@ -11,8 +11,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".UbahPassword"></activity>
-        <activity android:name=".Biodata" />
+        <activity android:name=".UbahPassword">
+
+        </activity>
+        <activity android:name=".Biodata">
+
+        </activity>
         <activity android:name=".Login">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

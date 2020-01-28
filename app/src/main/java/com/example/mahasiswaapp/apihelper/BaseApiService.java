@@ -4,7 +4,9 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.Query;
 
 public interface BaseApiService {
 
@@ -22,4 +24,8 @@ public interface BaseApiService {
                                     @Field("passwordlama") String passwordlama,
                                        @Field("passwordbaru") String passwordbaru,
                                        @Field("konfpassword") String konfpassword);
+
+    // Fungsi untuk memanggil API http://localhost/sia/TampilBiodata.php
+    @GET("TampilBiodata.php")
+    Call<ResponseBody> tampilBiodataRequest(@Query("nim") String nim);
 }
