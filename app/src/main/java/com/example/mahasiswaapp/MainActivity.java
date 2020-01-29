@@ -187,7 +187,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                             intent.putExtras(extras);
                             startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK));
-                            finish();
+                            //finish();
                         } else {
                             // jika gagal
                             String error_msg = jsonResults.getString("error_msg");
