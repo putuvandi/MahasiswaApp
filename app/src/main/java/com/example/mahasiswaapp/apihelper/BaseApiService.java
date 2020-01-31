@@ -28,4 +28,12 @@ public interface BaseApiService {
     // Fungsi untuk memanggil API http://localhost/sia/TampilBiodata.php
     @GET("TampilBiodata.php")
     Call<ResponseBody> tampilBiodataRequest(@Query("nim") String nim);
+
+    // Fungsi untuk memanggil API http://localhost/sia/TampilNamaKabupaten.php
+    @GET("TampilNamaKabupaten.php")
+    Call<ResponseBody> tampilNamaKabupatenRequest(@Query("kodeKabupaten") String kodeKabupaten);
+
+    // Fungsi untuk memanggil API http://localhost/sia/TampilJenisKelamin.php
+    @GET("TampilJenisKelamin.php")
+    Call<ResponseBody> tampilJenisKelaminRequest(@Query("kodeSex") String kodeSex);
 }

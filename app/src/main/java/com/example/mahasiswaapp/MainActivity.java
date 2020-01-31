@@ -39,6 +39,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     SharedPrefManager sharedPrefManager;
     ProgressDialog loading;
 
+    Bundle extras;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,6 +56,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         mContext = this;
         mApiService = UtilsApi.getAPIService();
+
+        extras = new Bundle();
 
         btnLogout.setOnClickListener(this);
         btnBiodata.setOnClickListener(this);
@@ -120,7 +124,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         if (jsonResults.getString("error").equals("false")) {
 
                             Intent intent = new Intent(mContext, Biodata.class);
-                            Bundle extras = new Bundle();
 
                             String mNamaMhs = jsonResults.getJSONObject("mahasiswa").getString("nama_mahasiswa");
                             extras.putString("namaMhs", mNamaMhs);

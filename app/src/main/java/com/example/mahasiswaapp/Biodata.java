@@ -2,24 +2,42 @@ package com.example.mahasiswaapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.InputType;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.example.mahasiswaapp.apihelper.BaseApiService;
 import com.example.mahasiswaapp.apihelper.UtilsApi;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.util.StringTokenizer;
+
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class Biodata extends AppCompatActivity {
 
-    EditText txtBioNim, txtBioNamaMhs, txtBioTempatLahir, txtBioTglLahir, txtBioJenisKelamin,
-            txtBioAlamatSkr, txtBioKabupatenSkr, txtBioKodePosSkr, txtBioAlamatAsal,
-            txtBioKabupatenAsal, txtBioKodePosAsal, txtBioNamaAyah, txtBioEmail,
+    EditText txtBioNim, txtBioNamaMhs, txtBioKabupatenLahir, txtBioTempatLahir, txtBioTglLahir,
+            txtBioJenisKelamin, txtBioAlamatSkr, txtBioKabupatenSkr, txtBioKodePosSkr,
+            txtBioAlamatAsal, txtBioKabupatenAsal, txtBioKodePosAsal, txtBioNamaAyah, txtBioEmail,
             txtBioNoHp, txtBioNISN, txtBioNIK, txtBioTglLahirAyah, txtBioNamaIbu,
             txtBioTglLahirIbu, txtBioNIKAyah, txtBioNIKIbu;
+
+    DatePickerDialog picker;
 
     Button btnUbahBiodata;
 
@@ -40,6 +58,7 @@ public class Biodata extends AppCompatActivity {
 
         txtBioNim = (EditText) findViewById(R.id.txtBioNim);
         txtBioNamaMhs = (EditText) findViewById(R.id.txtBioNamaMhs);
+        txtBioKabupatenLahir = (EditText) findViewById(R.id.txtBioKabupatenLahir);
         txtBioTempatLahir = (EditText) findViewById(R.id.txtBioTempatLahir);
         txtBioTglLahir = (EditText) findViewById(R.id.txtBioTglLahir);
         txtBioJenisKelamin = (EditText) findViewById(R.id.txtBioJenisKelamin);
@@ -72,22 +91,41 @@ public class Biodata extends AppCompatActivity {
         txtBioNamaMhs.setText(mNamaMhs);
 
         String mKodeKabLahir = extras.getString("kodeKabLahir");
-        txtBioTempatLahir.setText(mKodeKabLahir);
+        ambilNamaKabupaten(txtBioKabupatenLahir, mKodeKabLahir);
 
-        //String mTempatLahir = extras.getString("tempatLahir");
-        //txtBioTempatLahir.setText(mTempatLahir);
+        String mTempatLahir = extras.getString("tempatLahir");
+        txtBioTempatLahir.setText(mTempatLahir);
 
         String mTglLahir = extras.getString("tglLahir");
         txtBioTglLahir.setText(mTglLahir);
+        txtBioTglLahir.setInputType(InputType.TYPE_NULL);
+        txtBioTglLahir.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int[] tgl = getTanggal(txtBioTglLahir.getText().toString());
+                int tahun = tgl[0];
+                int bulan = tgl[1]-1;
+                int hari = tgl[2];
+                Log.e("cetak: ", Integer.toString(bulan));
+                picker = new DatePickerDialog(Biodata.this, new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                        txtBioTglLahir.setText(year+"-"+(month+1)+"-"+dayOfMonth);
+                    }
+                }, tahun, bulan, hari);
+                picker.show();
+            }
+        });
 
         String mSex = extras.getString("sex");
-        txtBioJenisKelamin.setText(mSex);
+        ambilJenisKelamin(txtBioJenisKelamin, mSex);
+        //txtBioJenisKelamin.setText(mSex);
 
         String mAlamatSkr = extras.getString("alamatSkr");
         txtBioAlamatSkr.setText(mAlamatSkr);
 
         String mKodeKabSkr = extras.getString("kodeKabSkr");
-        txtBioKabupatenSkr.setText(mKodeKabSkr);
+        ambilNamaKabupaten(txtBioKabupatenSkr, mKodeKabSkr);
 
         String mKodePosSkr = extras.getString("kodePosSkr");
         txtBioKodePosSkr.setText(mKodePosSkr);
@@ -118,12 +156,48 @@ public class Biodata extends AppCompatActivity {
 
         String mTglLahirAyah = extras.getString("tglLahirAyah");
         txtBioTglLahirAyah.setText(mTglLahirAyah);
+        txtBioTglLahirAyah.setInputType(InputType.TYPE_NULL);
+        txtBioTglLahirAyah.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int[] tgl = getTanggal(txtBioTglLahirAyah.getText().toString());
+                int tahun = tgl[0];
+                int bulan = tgl[1]-1;
+                int hari = tgl[2];
+                Log.e("cetak: ", Integer.toString(bulan));
+                picker = new DatePickerDialog(Biodata.this, new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                        txtBioTglLahirAyah.setText(year+"-"+(month+1)+"-"+dayOfMonth);
+                    }
+                }, tahun, bulan, hari);
+                picker.show();
+            }
+        });
 
         String mNamaIbuKandung = extras.getString("namaIbuKandung");
         txtBioNamaIbu.setText(mNamaIbuKandung);
 
         String mTglLahirIbuKandung = extras.getString("tglLahirIbuKandung");
         txtBioTglLahirIbu.setText(mTglLahirIbuKandung);
+        txtBioTglLahirIbu.setInputType(InputType.TYPE_NULL);
+        txtBioTglLahirIbu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int[] tgl = getTanggal(txtBioTglLahirIbu.getText().toString());
+                int tahun = tgl[0];
+                int bulan = tgl[1]-1;
+                int hari = tgl[2];
+                Log.e("cetak: ", Integer.toString(bulan));
+                picker = new DatePickerDialog(Biodata.this, new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                        txtBioTglLahirIbu.setText(year+"-"+(month+1)+"-"+dayOfMonth);
+                    }
+                }, tahun, bulan, hari);
+                picker.show();
+            }
+        });
 
         String mNikAyah = extras.getString("nikAyah");
         txtBioNIKAyah.setText(mNikAyah);
@@ -136,6 +210,71 @@ public class Biodata extends AppCompatActivity {
             public void onClick(View v) {
                 loading = ProgressDialog.show(mContext, null, "Harap Tunggu...", true, false);
                 //requestLogin();
+            }
+        });
+    }
+
+    private int[] getTanggal(String tgl) {
+        StringTokenizer st = new StringTokenizer(tgl, "-");
+        int[] tanggal = new int[3];
+        tanggal[0] = Integer.parseInt(st.nextToken());
+        tanggal[1] = Integer.parseInt(st.nextToken());
+        tanggal[2] = Integer.parseInt(st.nextToken());
+        return tanggal;
+    }
+
+    private void ambilNamaKabupaten(final EditText editText, String kodeKabupaten) {
+        mApiService.tampilNamaKabupatenRequest(kodeKabupaten).enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful()) {
+                    try {
+                        JSONObject jsonResults = new JSONObject(response.body().string());
+                        if (jsonResults.getString("error").equals("false")) {
+                            editText.setText(jsonResults.getString("kabupaten"));
+                        } else {
+                            // jika gagal
+                            String error_msg = jsonResults.getString("error_msg");
+                            Toast.makeText(mContext, error_msg, Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            @Override
+            public void onFailure(Call<ResponseBody> mCall, Throwable mThrowable) {
+                Log.e("debug", "onFailure: ERROR > " + mThrowable.toString());
+            }
+        });
+    }
+
+    private void ambilJenisKelamin(final EditText editText, String kodeSex) {
+        mApiService.tampilJenisKelaminRequest(kodeSex).enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful()) {
+                    try {
+                        JSONObject jsonResults = new JSONObject(response.body().string());
+                        if (jsonResults.getString("error").equals("false")) {
+                            editText.setText(jsonResults.getString("jenis_kelamin"));
+                        } else {
+                            // jika gagal
+                            String error_msg = jsonResults.getString("error_msg");
+                            Toast.makeText(mContext, error_msg, Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            @Override
+            public void onFailure(Call<ResponseBody> mCall, Throwable mThrowable) {
+                Log.e("debug", "onFailure: ERROR > " + mThrowable.toString());
             }
         });
     }
