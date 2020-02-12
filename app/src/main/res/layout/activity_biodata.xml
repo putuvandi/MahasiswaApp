@@ -70,7 +70,7 @@
                 android:paddingTop="16dp"
                 android:text="Tempat Lahir"/>
 
-            <EditText
+            <AutoCompleteTextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/txtBioKabupatenLahir"/>
@@ -134,7 +134,7 @@
                 android:paddingTop="16dp"
                 android:text="Kabupaten Sekarang"/>
 
-            <EditText
+            <AutoCompleteTextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/txtBioKabupatenSkr"/>
@@ -177,7 +177,7 @@
                 android:paddingTop="16dp"
                 android:text="Kabupaten Asal"/>
 
-            <EditText
+            <AutoCompleteTextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/txtBioKabupatenAsal"/>

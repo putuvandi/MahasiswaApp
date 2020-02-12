@@ -2,14 +2,19 @@ package com.example.mahasiswaapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -18,10 +23,13 @@ import android.widget.Toast;
 import com.example.mahasiswaapp.apihelper.BaseApiService;
 import com.example.mahasiswaapp.apihelper.UtilsApi;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import okhttp3.ResponseBody;
@@ -31,11 +39,17 @@ import retrofit2.Response;
 
 public class Biodata extends AppCompatActivity {
 
-    EditText txtBioNim, txtBioNamaMhs, txtBioKabupatenLahir, txtBioTempatLahir, txtBioTglLahir,
-            txtBioJenisKelamin, txtBioAlamatSkr, txtBioKabupatenSkr, txtBioKodePosSkr,
-            txtBioAlamatAsal, txtBioKabupatenAsal, txtBioKodePosAsal, txtBioNamaAyah, txtBioEmail,
+    EditText txtBioNim, txtBioNamaMhs, txtBioTempatLahir, txtBioTglLahir,
+            txtBioJenisKelamin, txtBioAlamatSkr, txtBioKodePosSkr,
+            txtBioAlamatAsal, txtBioKodePosAsal, txtBioNamaAyah, txtBioEmail,
             txtBioNoHp, txtBioNISN, txtBioNIK, txtBioTglLahirAyah, txtBioNamaIbu,
             txtBioTglLahirIbu, txtBioNIKAyah, txtBioNIKIbu;
+
+    AutoCompleteTextView txtBioKabupatenLahir, txtBioKabupatenSkr, txtBioKabupatenAsal;
+
+    /*String nim, kabLahir, tempatLahir, tglLahir, alamatSkr, kabSkr,
+        kodePosSkr, alamatAsal, kabAsal, kodePosAsal, namaAyah, email, noHp, nisn,
+        nik, tglLahirAyah, namaIbu, tglLahirIbu, nikAyah, nikIbu;*/
 
     DatePickerDialog picker;
 
@@ -56,17 +70,19 @@ public class Biodata extends AppCompatActivity {
         mContext = this;
         mApiService = UtilsApi.getAPIService();
 
+        getSemuaKabupaten();
+
         txtBioNim = (EditText) findViewById(R.id.txtBioNim);
         txtBioNamaMhs = (EditText) findViewById(R.id.txtBioNamaMhs);
-        txtBioKabupatenLahir = (EditText) findViewById(R.id.txtBioKabupatenLahir);
+        txtBioKabupatenLahir = (AutoCompleteTextView) findViewById(R.id.txtBioKabupatenLahir);
         txtBioTempatLahir = (EditText) findViewById(R.id.txtBioTempatLahir);
         txtBioTglLahir = (EditText) findViewById(R.id.txtBioTglLahir);
         txtBioJenisKelamin = (EditText) findViewById(R.id.txtBioJenisKelamin);
         txtBioAlamatSkr = (EditText) findViewById(R.id.txtBioAlamatSkr);
-        txtBioKabupatenSkr = (EditText) findViewById(R.id.txtBioKabupatenSkr);
+        txtBioKabupatenSkr = (AutoCompleteTextView) findViewById(R.id.txtBioKabupatenSkr);
         txtBioKodePosSkr = (EditText) findViewById(R.id.txtBioKodePosSkr);
         txtBioAlamatAsal = (EditText) findViewById(R.id.txtBioAlamatAsal);
-        txtBioKabupatenAsal = (EditText) findViewById(R.id.txtBioKabupatenAsal);
+        txtBioKabupatenAsal = (AutoCompleteTextView) findViewById(R.id.txtBioKabupatenAsal);
         txtBioKodePosAsal = (EditText) findViewById(R.id.txtBioKodePosAsal);
         txtBioNamaAyah = (EditText) findViewById(R.id.txtBioNamaAyah);
         txtBioEmail = (EditText) findViewById(R.id.txtBioEmail);
@@ -91,7 +107,7 @@ public class Biodata extends AppCompatActivity {
         txtBioNamaMhs.setText(mNamaMhs);
 
         String mKodeKabLahir = extras.getString("kodeKabLahir");
-        ambilNamaKabupaten(txtBioKabupatenLahir, mKodeKabLahir);
+        txtBioKabupatenLahir.setText(mKodeKabLahir);
 
         String mTempatLahir = extras.getString("tempatLahir");
         txtBioTempatLahir.setText(mTempatLahir);
@@ -118,14 +134,13 @@ public class Biodata extends AppCompatActivity {
         });
 
         String mSex = extras.getString("sex");
-        ambilJenisKelamin(txtBioJenisKelamin, mSex);
-        //txtBioJenisKelamin.setText(mSex);
+        txtBioJenisKelamin.setText(mSex);
 
         String mAlamatSkr = extras.getString("alamatSkr");
         txtBioAlamatSkr.setText(mAlamatSkr);
 
         String mKodeKabSkr = extras.getString("kodeKabSkr");
-        ambilNamaKabupaten(txtBioKabupatenSkr, mKodeKabSkr);
+        txtBioKabupatenSkr.setText(mKodeKabSkr);
 
         String mKodePosSkr = extras.getString("kodePosSkr");
         txtBioKodePosSkr.setText(mKodePosSkr);
@@ -208,8 +223,63 @@ public class Biodata extends AppCompatActivity {
         btnUbahBiodata.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                loading = ProgressDialog.show(mContext, null, "Harap Tunggu...", true, false);
-                //requestLogin();
+                if (TextUtils.isEmpty(txtBioNIK.getText().toString()) || TextUtils.isEmpty(txtBioNamaIbu.getText().toString())) {
+                    Toast.makeText(mContext, "NIK dan Nama Ibu Kandung harus diisi", Toast.LENGTH_SHORT).show();
+                } else {
+                    loading = ProgressDialog.show(mContext, null, "Harap Tunggu...", true, false);
+                    ubahBiodata(sharedPrefManager.getSPNim(), txtBioKabupatenLahir.getText().toString(),
+                            txtBioTempatLahir.getText().toString(), txtBioTglLahir.getText().toString(),
+                            txtBioAlamatSkr.getText().toString(), txtBioKabupatenSkr.getText().toString(),
+                            txtBioKodePosSkr.getText().toString(), txtBioAlamatAsal.getText().toString(),
+                            txtBioKabupatenAsal.getText().toString(), txtBioKodePosAsal.getText().toString(),
+                            txtBioNamaAyah.getText().toString(), txtBioEmail.getText().toString(),
+                            txtBioNoHp.getText().toString(), txtBioNISN.getText().toString(),
+                            txtBioNIK.getText().toString(), txtBioTglLahirAyah.getText().toString(),
+                            txtBioNamaIbu.getText().toString(), txtBioTglLahirIbu.getText().toString(),
+                            txtBioNIKAyah.getText().toString(), txtBioNIKIbu.getText().toString());
+                }
+            }
+        });
+    }
+
+    private void ubahBiodata(String nim, String kodeKabLahir, String tempatLahir,
+                             String tglLahir, String alamatSkr, String kodeKabSkr,
+                             String kodePosSkr, String alamatAsal, String kodeKabAsal,
+                             String kodePosAsal, String namaAyah, String email,
+                             String noHp, String nisn, String nik, String tglLahirAyah,
+                             String namaIbu, String tglLahirIbu, String nikAyah, String nikIbu) {
+        mApiService.ubahBiodataRequest(nim, kodeKabLahir, tempatLahir, tglLahir,alamatSkr,kodeKabSkr,
+                kodePosSkr, alamatAsal, kodeKabAsal, kodePosAsal, namaAyah, email, noHp, nisn, nik,
+                tglLahirAyah, namaIbu, tglLahirIbu, nikAyah, nikIbu).enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful()) {
+                    loading.dismiss();
+                    try {
+                        JSONObject jsonResults = new JSONObject(response.body().string());
+                        if (jsonResults.getString("error").equals("false")) {
+                            String message = jsonResults.getString("message");
+                            Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(mContext, MainActivity.class);// New activity
+                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(intent);
+                            finish();
+                        } else {
+                            // jika gagal
+                            String error_msg = jsonResults.getString("error_msg");
+                            Toast.makeText(mContext, error_msg, Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.e("debug", "onFailure: ERROR > " + t.toString());
             }
         });
     }
@@ -223,48 +293,38 @@ public class Biodata extends AppCompatActivity {
         return tanggal;
     }
 
-    private void ambilNamaKabupaten(final EditText editText, String kodeKabupaten) {
-        mApiService.tampilNamaKabupatenRequest(kodeKabupaten).enqueue(new Callback<ResponseBody>() {
+    private void getSemuaKabupaten() {
+        mApiService.getAllKabupaten().enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
                     try {
+                        Log.d("Async Data RemoteData",
+                                "Got REMOTE DATA ");
                         JSONObject jsonResults = new JSONObject(response.body().string());
-                        if (jsonResults.getString("error").equals("false")) {
-                            editText.setText(jsonResults.getString("kabupaten"));
-                        } else {
-                            // jika gagal
-                            String error_msg = jsonResults.getString("error_msg");
-                            Toast.makeText(mContext, error_msg, Toast.LENGTH_SHORT).show();
+                        JSONArray result = jsonResults.getJSONArray("result");
+                        List<String> str = new ArrayList<String>();
+                        for (int i = 0; i<result.length(); i++) {
+                            JSONObject jo = result.getJSONObject(i);
+                            String kabupaten = jo.getString("kabupaten");
+                            str.add(kabupaten);
                         }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-            @Override
-            public void onFailure(Call<ResponseBody> mCall, Throwable mThrowable) {
-                Log.e("debug", "onFailure: ERROR > " + mThrowable.toString());
-            }
-        });
-    }
+                        AutoCompleteTextView autoTV1 =
+                                (AutoCompleteTextView)((Activity)mContext).findViewById(R.id.txtBioKabupatenLahir);
+                        AutoCompleteTextView autoTV2 =
+                                (AutoCompleteTextView)((Activity)mContext).findViewById(R.id.txtBioKabupatenSkr);
+                        AutoCompleteTextView autoTV3 =
+                                (AutoCompleteTextView)((Activity)mContext).findViewById(R.id.txtBioKabupatenAsal);
 
-    private void ambilJenisKelamin(final EditText editText, String kodeSex) {
-        mApiService.tampilJenisKelaminRequest(kodeSex).enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if (response.isSuccessful()) {
-                    try {
-                        JSONObject jsonResults = new JSONObject(response.body().string());
-                        if (jsonResults.getString("error").equals("false")) {
-                            editText.setText(jsonResults.getString("jenis_kelamin"));
-                        } else {
-                            // jika gagal
-                            String error_msg = jsonResults.getString("error_msg");
-                            Toast.makeText(mContext, error_msg, Toast.LENGTH_SHORT).show();
-                        }
+                        ArrayAdapter<String> adapter1 = new ArrayAdapter<String>(mContext,
+                                android.R.layout.simple_dropdown_item_1line, str.toArray(new String[0]));
+                        ArrayAdapter<String> adapter2 = new ArrayAdapter<String>(mContext,
+                                android.R.layout.simple_dropdown_item_1line, str.toArray(new String[0]));
+                        ArrayAdapter<String> adapter3 = new ArrayAdapter<String>(mContext,
+                                android.R.layout.simple_dropdown_item_1line, str.toArray(new String[0]));
+                        autoTV1.setAdapter(adapter1);
+                        autoTV2.setAdapter(adapter2);
+                        autoTV3.setAdapter(adapter3);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     } catch (IOException e) {
@@ -272,9 +332,11 @@ public class Biodata extends AppCompatActivity {
                     }
                 }
             }
+
             @Override
-            public void onFailure(Call<ResponseBody> mCall, Throwable mThrowable) {
-                Log.e("debug", "onFailure: ERROR > " + mThrowable.toString());
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.e("Async Data RemoteData",
+                        "error in getting remote data");
             }
         });
     }

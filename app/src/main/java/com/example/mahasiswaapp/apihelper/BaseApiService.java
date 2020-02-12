@@ -25,15 +25,35 @@ public interface BaseApiService {
                                        @Field("passwordbaru") String passwordbaru,
                                        @Field("konfpassword") String konfpassword);
 
+    // Fungsi untuk memanggil API http://localhost/sia/UbahBiodata.php
+    @FormUrlEncoded
+    @POST("UbahBiodata.php")
+    Call<ResponseBody> ubahBiodataRequest(@Field("nim") String nim,
+                                       @Field("kodeKabLahir") String kodeKabLahir,
+                                       @Field("tempatLahir") String tempatLahir,
+                                       @Field("tglLahir") String tglLahir,
+                                          @Field("alamatSkr") String alamatSkr,
+                                          @Field("kodeKabSkr") String kodeKabSkr,
+                                          @Field("kodePosSkr") String kodePosSkr,
+                                          @Field("alamatAsal") String alamatAsal,
+                                          @Field("kodeKabAsal") String kodeKabAsal,
+                                          @Field("kodePosAsal") String kodePosAsal,
+                                          @Field("namaAyah") String namaAyah,
+                                          @Field("email") String email,
+                                          @Field("noHp") String noHp,
+                                          @Field("nisn") String nisn,
+                                          @Field("nik") String nik,
+                                          @Field("tglLahirAyah") String tglLahirAyah,
+                                          @Field("namaIbu") String namaIbu,
+                                          @Field("tglLahirIbu") String tglLahirIbu,
+                                          @Field("nikAyah") String nikAyah,
+                                          @Field("nikIbu") String nikIbu);
+
     // Fungsi untuk memanggil API http://localhost/sia/TampilBiodata.php
     @GET("TampilBiodata.php")
     Call<ResponseBody> tampilBiodataRequest(@Query("nim") String nim);
 
-    // Fungsi untuk memanggil API http://localhost/sia/TampilNamaKabupaten.php
-    @GET("TampilNamaKabupaten.php")
-    Call<ResponseBody> tampilNamaKabupatenRequest(@Query("kodeKabupaten") String kodeKabupaten);
-
-    // Fungsi untuk memanggil API http://localhost/sia/TampilJenisKelamin.php
-    @GET("TampilJenisKelamin.php")
-    Call<ResponseBody> tampilJenisKelaminRequest(@Query("kodeSex") String kodeSex);
+    // Fungsi untuk memanggil API http://localhost/sia/TampilAllKabupaten.php
+    @GET("TampilAllKabupaten.php")
+    Call<ResponseBody> getAllKabupaten();
 }
