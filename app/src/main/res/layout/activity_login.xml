@@ -45,6 +45,13 @@
             android:background="@drawable/bg_rectangle_edittext"
             android:textColor="#80FFFFFF"/>
 
+        <Spinner
+            android:id="@+id/loginSebagai"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:layout_marginTop="8dp"/>
+
         <Button
             android:id="@+id/btnLogin"
             android:layout_marginTop="16dp"

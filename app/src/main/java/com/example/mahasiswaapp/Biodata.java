@@ -47,10 +47,6 @@ public class Biodata extends AppCompatActivity {
 
     AutoCompleteTextView txtBioKabupatenLahir, txtBioKabupatenSkr, txtBioKabupatenAsal;
 
-    /*String nim, kabLahir, tempatLahir, tglLahir, alamatSkr, kabSkr,
-        kodePosSkr, alamatAsal, kabAsal, kodePosAsal, namaAyah, email, noHp, nisn,
-        nik, tglLahirAyah, namaIbu, tglLahirIbu, nikAyah, nikIbu;*/
-
     DatePickerDialog picker;
 
     Button btnUbahBiodata;

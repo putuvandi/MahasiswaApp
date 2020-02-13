@@ -1,5 +1,6 @@
 package com.example.mahasiswaapp;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ProgressDialog;
@@ -7,9 +8,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.mahasiswaapp.apihelper.BaseApiService;
@@ -19,6 +24,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -27,10 +34,12 @@ import retrofit2.Response;
 
 public class Login extends AppCompatActivity {
 
-    EditText txtNim;
-    EditText txtPassword;
+    EditText txtNim, txtPassword;
+    Spinner loginSebagai;
     Button btnLogin;
     ProgressDialog loading;
+
+    List<String> listLogin;
 
     Context mContext;
     BaseApiService mApiService;
@@ -47,7 +56,13 @@ public class Login extends AppCompatActivity {
 
         txtNim = (EditText) findViewById(R.id.txtNim);
         txtPassword = (EditText) findViewById(R.id.txtPassword);
+        loginSebagai = (Spinner) findViewById(R.id.loginSebagai);
         btnLogin = (Button) findViewById(R.id.btnLogin);
+
+        listLogin = new ArrayList<>();
+        listLogin.add("-- Pilih login sebagai --");
+        listLogin.add("Mahasiswa");
+        listLogin.add("Dosen");
 
         sharedPrefManager = new SharedPrefManager(this);
         // skip login jika user sudah login
@@ -57,11 +72,36 @@ public class Login extends AppCompatActivity {
             finish();
         }
 
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item, listLogin);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        loginSebagai.setAdapter(adapter);
+
+        loginSebagai.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                //String pilihan = parent.getItemAtPosition(position).toString();
+                //Toast.makeText(parent.getContext(), "Memilih: " + pilihan, Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                loading = ProgressDialog.show(mContext, null, "Harap Tunggu...", true, false);
-                requestLogin();
+                //loading = ProgressDialog.show(mContext, null, "Harap Tunggu...", true, false);
+                if (loginSebagai.getSelectedItem().equals("Mahasiswa")) {
+                    loading = ProgressDialog.show(mContext, null, "Harap Tunggu...", true, false);
+                    requestLogin();
+                } else if (loginSebagai.getSelectedItem().equals("Dosen")) {
+                    Toast.makeText(mContext, "Masuk ke menu dosen", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(mContext, "Silahkan pilih peran login", Toast.LENGTH_LONG).show();
+                }
             }
         });
 
